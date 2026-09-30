@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B1877" />
+      <stop offset="50%" stop-color="#6C4AB6" />
+      <stop offset="100%" stop-color="#E85D9E" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bgGrad)" />
+  <circle cx="400" cy="220" r="160" fill="url(#glow)" />
+  <!-- Abstract wave shapes -->
+  <path d="M 0,350 Q 200,280 400,340 T 800,310 L 800,500 L 0,500 Z" fill="#ffffff" fill-opacity="0.08" />
+  <path d="M 0,390 Q 250,330 500,400 T 800,360 L 800,500 L 0,500 Z" fill="#ffffff" fill-opacity="0.12" />
+  <!-- Sphere Logo Icon in center -->
+  <g transform="translate(360, 160)">
+    <circle cx="40" cy="40" r="38" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.85"/>
+    <ellipse cx="40" cy="40" rx="38" ry="16" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.75" transform="rotate(-25 40 40)"/>
+    <circle cx="40" cy="40" r="18" fill="#FFFFFF" opacity="0.9"/>
+  </g>
+  <text x="400" y="275" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="28" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">BlogSphere Article</text>
+  <text x="400" y="305" font-family="'Plus Jakarta Sans', sans-serif" font-weight="400" font-size="16" fill="#F8F7FC" opacity="0.8" text-anchor="middle">Inspiring Stories &amp; Tech Insights</text>
+</svg>

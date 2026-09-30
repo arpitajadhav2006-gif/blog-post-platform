@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookmarks — BlogSphere AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/bookmarks.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                ✨ BlogSphere <span class="logo-badge">AI</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="explore.html" class="nav-link">Explore</a></li>
+                <li><a href="explore.html?sort=trending" class="nav-link">Trending</a></li>
+                <li><a href="bookmarks.html" class="nav-link active">Bookmarks</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="profile.html" class="nav-link">Profile</a></li>
+            </ul>
+            <div class="nav-actions" id="navActions"></div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container" style="padding: 3rem 1.5rem; min-height: 70vh;">
+        <!-- Page Header -->
+        <div style="text-align: center; margin-bottom: 2.5rem;">
+            <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem;">
+                🔖 My Bookmarks
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">
+                Save interesting articles and read them later.
+            </p>
+        </div>
+
+        <!-- Search Input -->
+        <div class="bookmark-search-wrap">
+            <i class="fas fa-search bookmark-search-icon"></i>
+            <input type="text" id="searchBookmarksInput" class="bookmark-search-input" placeholder="🔎 Search your bookmarks by title, author, category, or tag...">
+        </div>
+
+        <!-- Skeleton Loaders Container -->
+        <div id="skeletonContainer" class="bookmarks-grid" style="display: grid;">
+            <div class="skeleton-card">
+                <div class="skeleton-img skeleton-pulse"></div>
+                <div class="skeleton-body">
+                    <div class="skeleton-line short skeleton-pulse"></div>
+                    <div class="skeleton-line medium skeleton-pulse"></div>
+                    <div class="skeleton-line full skeleton-pulse"></div>
+                </div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-img skeleton-pulse"></div>
+                <div class="skeleton-body">
+                    <div class="skeleton-line short skeleton-pulse"></div>
+                    <div class="skeleton-line medium skeleton-pulse"></div>
+                    <div class="skeleton-line full skeleton-pulse"></div>
+                </div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-img skeleton-pulse"></div>
+                <div class="skeleton-body">
+                    <div class="skeleton-line short skeleton-pulse"></div>
+                    <div class="skeleton-line medium skeleton-pulse"></div>
+                    <div class="skeleton-line full skeleton-pulse"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookmarks Cards Grid -->
+        <div id="bookmarksGrid" class="bookmarks-grid" style="display: none;"></div>
+
+        <!-- Empty State View -->
+        <div id="emptyState" style="display: none;">
+            <div class="empty-bookmark-state">
+                <div class="empty-bookmark-icon">🔖</div>
+                <h2 class="empty-bookmark-title">No bookmarks yet</h2>
+                <p class="empty-bookmark-desc">
+                    You haven't saved any articles yet. Explore interesting blogs and save them for later reading.
+                </p>
+                <a href="index.html#explore" class="btn btn-primary" style="padding: 0.7rem 1.6rem; font-size: 1rem;">
+                    [ Explore Blogs → ]
+                </a>
+            </div>
+        </div>
+
+        <!-- Error State View -->
+        <div id="errorState" style="display: none;"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-col">
+                <a href="index.html" class="logo" style="margin-bottom: 1rem; display: inline-block;">
+                    ✨ BlogSphere <span class="logo-badge">AI</span>
+                </a>
+                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 320px;">
+                    An AI-powered blogging platform built with Python Flask REST API and modern web UI technologies.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="explore.html">Explore</a></li>
+                    <li><a href="bookmarks.html">Bookmarks</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                    <a href="#" class="theme-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="theme-btn"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>© 2026 BlogSphere AI. Engineered for Hackathons. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/bookmarks.js"></script>
+</body>
+</html>

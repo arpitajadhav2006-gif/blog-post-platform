@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore & Search Articles — BlogSphere AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                ✨ BlogSphere <span class="logo-badge">AI</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="explore.html" class="nav-link active">Explore</a></li>
+                <li><a href="bookmarks.html" class="nav-link">Bookmarks</a></li>
+            </ul>
+            <div class="nav-actions" id="navActions"></div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container" style="padding: 2.5rem 1.5rem;">
+        <!-- Header & Search Input -->
+        <div style="max-width: 800px; margin: 0 auto 2.5rem; text-align: center;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Explore & Discover Articles</h1>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Search across topics, tags, authors, and AI-curated posts</p>
+
+            <div style="position: relative;">
+                <input type="text" id="searchInput" class="form-control" style="padding: 0.9rem 1.2rem 0.9rem 2.8rem; font-size: 1.05rem; border-radius: var(--radius-full);" placeholder="Search by title, keyword, or author...">
+                <i class="fas fa-search" style="position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+            </div>
+
+            <!-- Search Suggestions Pills -->
+            <div id="suggestionsBox" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Controls Bar: Category Pills + Sort Dropdown -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="categories-bar" id="categoriesBar" style="padding: 0; margin: 0;">
+                <button class="category-pill active" data-category="">All</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-muted);">Sort By:</label>
+                <select id="sortSelect" class="form-control" style="padding: 0.45rem 1rem; font-size: 0.9rem; width: auto;">
+                    <option value="latest">Latest</option>
+                    <option value="trending">🔥 Trending</option>
+                    <option value="views">👁️ Most Viewed</option>
+                    <option value="likes">❤️ Most Liked</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="blog-grid" id="exploreGrid"></div>
+
+        <!-- Pagination Controls -->
+        <div id="paginationControls" style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 3rem;"></div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentCategory = urlParams.get('category') || '';
+        let currentSort = urlParams.get('sort') || 'latest';
+        let searchQuery = urlParams.get('search') || '';
+        let currentPage = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (searchQuery) document.getElementById('searchInput').value = searchQuery;
+            document.getElementById('sortSelect').value = currentSort;
+
+            loadCategories();
+            loadPosts();
+
+            let searchTimeout = null;
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchQuery = e.target.value.trim();
+                searchTimeout = setTimeout(() => {
+                    currentPage = 1;
+                    loadPosts();
+                }, 300);
+            });
+
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                currentPage = 1;
+                loadPosts();
+            });
+        });
+
+        async function loadCategories() {
+            try {
+                const res = await api.getCategories();
+                const bar = document.getElementById('categoriesBar');
+                if (res.success && res.data.categories.length) {
+                    const pills = res.data.categories.map(c => `
+                        <button class="category-pill ${c.slug === currentCategory ? 'active' : ''}" data-category="${c.slug}">${c.icon} ${escapeHTML(c.name)}</button>
+                    `).join('');
+                    bar.innerHTML = `<button class="category-pill ${!currentCategory ? 'active' : ''}" data-category="">All</button>` + pills;
+
+                    bar.querySelectorAll('.category-pill').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            bar.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                            btn.classList.add('active');
+                            currentCategory = btn.getAttribute('data-category');
+                            currentPage = 1;
+                            loadPosts();
+                        });
+                    });
+                }
+            } catch (e) {}
+        }
+
+        async function loadPosts() {
+            try {
+                const params = {
+                    page: currentPage,
+                    limit: 9,
+                    sort: currentSort
+                };
+                if (currentCategory) params.category = currentCategory;
+                if (searchQuery) params.search = searchQuery;
+
+                const res = await api.getPosts(params);
+                const grid = document.getElementById('exploreGrid');
+
+                if (res.success && res.data.posts.length) {
+                    grid.innerHTML = res.data.posts.map(p => createPostCardHTML(p)).join('');
+                    renderPagination(res.data.pagination);
+                } else {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-muted);"><h3>No articles found</h3><p style="margin-top:0.5rem;">Try adjusting your search query or filters.</p></div>`;
+                    document.getElementById('paginationControls').innerHTML = '';
+                }
+            } catch (e) {
+                showToast('Failed to fetch articles', 'error');
+            }
+        }
+
+        function renderPagination(pg) {
+            if (!pg || pg.pages <= 1) {
+                document.getElementById('paginationControls').innerHTML = '';
+                return;
+            }
+            let html = '';
+            if (pg.has_prev) {
+                html += `<button class="btn btn-secondary" onclick="changePage(${pg.page - 1})"><i class="fas fa-chevron-left"></i> Prev</button>`;
+            }
+            html += `<span style="font-weight: 600; font-size: 0.95rem; color: var(--text-muted);">Page ${pg.page} of ${pg.pages}</span>`;
+            if (pg.has_next) {
+                html += `<button class="btn btn-secondary" onclick="changePage(${pg.page + 1})">Next <i class="fas fa-chevron-right"></i></button>`;
+            }
+            document.getElementById('paginationControls').innerHTML = html;
+        }
+
+        function changePage(p) {
+            currentPage = p;
+            loadPosts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function createPostCardHTML(post) {
+            return `
+                <article class="blog-card">
+                    <div class="blog-card-image-wrap">
+                        <img src="${post.featured_image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80'}" class="blog-card-image" alt="${escapeHTML(post.title)}">
+                        <span class="blog-card-category">${escapeHTML(post.category ? post.category.name : 'General')}</span>
+                    </div>
+                    <div class="blog-card-body">
+                        <h3 class="blog-card-title"><a href="post.html?id=${post.id}">${escapeHTML(post.title)}</a></h3>
+                        <p class="blog-card-excerpt">${escapeHTML(post.excerpt)}</p>
+                        <div class="blog-card-tags">
+                            ${(post.tags || []).slice(0, 3).map(t => `<span class="tag-pill">#${escapeHTML(t.name)}</span>`).join('')}
+                        </div>
+                        <div class="blog-card-footer">
+                            <div class="author-info">
+                                <img src="${post.author ? post.author.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80' : ''}" class="author-avatar">
+                                <div>
+                                    <div class="author-name">${escapeHTML(post.author ? post.author.full_name : 'Author')}</div>
+                                    <div class="post-date">${post.reading_time || '2 min read'}</div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn ${post.liked ? 'active' : ''}" onclick="toggleLike(event, ${post.id})">❤️ ${post.like_count || 0}</button>
+                                <button class="action-btn ${post.bookmarked ? 'active' : ''}" onclick="toggleBookmark(event, ${post.id})">🔖</button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        async function toggleLike(e, id) {
+            e.preventDefault();
+            if (!api.isLoggedIn()) {
+                showToast('Please log in to like articles', 'info');
+                return;
+            }
+            try {
+                const btn = e.currentTarget;
+                if (btn.classList.contains('active')) {
+                    await api.unlikePost(id);
+                    btn.classList.remove('active');
+                } else {
+                    await api.likePost(id);
+                    btn.classList.add('active');
+                }
+            } catch (err) {}
+        }
+
+        async function toggleBookmark(e, id) {
+            e.preventDefault();
+            if (!api.isLoggedIn()) {
+                showToast('Please log in to bookmark articles', 'info');
+                return;
+            }
+            try {
+                const btn = e.currentTarget;
+                if (btn.classList.contains('active')) {
+                    await api.unbookmarkPost(id);
+                    btn.classList.remove('active');
+                } else {
+                    await api.bookmarkPost(id);
+                    btn.classList.add('active');
+                }
+            } catch (err) {}
+        }
+    </script>
+</body>
+</html>

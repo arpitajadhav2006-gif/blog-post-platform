@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile — BlogSphere AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                ✨ BlogSphere <span class="logo-badge">AI</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="explore.html" class="nav-link">Explore</a></li>
+                <li><a href="bookmarks.html" class="nav-link">Bookmarks</a></li>
+            </ul>
+            <div class="nav-actions" id="navActions"></div>
+        </div>
+    </nav>
+
+    <!-- Profile Main -->
+    <main class="container" style="padding: 3rem 1.5rem;">
+        <div class="editor-card" style="max-width: 960px; padding: 2.5rem; margin-bottom: 3rem;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 2rem;">
+                <div style="display: flex; align-items: center; gap: 1.8rem; flex-wrap: wrap;">
+                    <img id="profAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light);">
+                    <div>
+                        <h1 id="profName" style="font-size: 2rem; margin-bottom: 0.2rem;">Loading User...</h1>
+                        <div style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.6rem;">@<span id="profUsername">username</span></div>
+                        <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                            <span id="profBadge" class="author-badge">✍️ Writer</span>
+                            <span style="font-size: 0.88rem; color: var(--text-muted);">Reputation: <strong id="profScore" style="color: var(--primary);">0</strong> pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.8rem;" id="profActions">
+                    <!-- Edit or Follow button -->
+                </div>
+            </div>
+
+            <!-- Bio -->
+            <p id="profBio" style="font-size: 1.05rem; color: var(--text-secondary); margin: 1.8rem 0 1.5rem; max-width: 750px;">
+                No bio written yet.
+            </p>
+
+            <!-- Stats Bar -->
+            <div style="display: flex; gap: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); flex-wrap: wrap;">
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 800;" id="profPostCount">0</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Published Articles</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 800;" id="profViewsCount">0</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Total Article Views</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 800;" id="profLikesCount">0</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Total Likes Received</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 800;" id="profFollowersCount">0</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Followers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Articles Tabs -->
+        <section style="max-width: 960px; margin: 0 auto;">
+            <div class="section-header">
+                <h2 class="section-title">📰 Articles by <span id="articlesTitleAuthor">Author</span></h2>
+            </div>
+            <div class="blog-grid" id="userPostsGrid"></div>
+        </section>
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+                <h3 style="font-size: 1.3rem;">Edit Profile</h3>
+                <button type="button" class="theme-btn" onclick="closeEditProfileModal()">✕</button>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="editFullName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Avatar Image URL</label>
+                    <input type="url" id="editAvatarUrl" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea id="editBio" class="form-control" style="min-height: 90px;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let targetId = urlParams.get('id');
+        let profileUser = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const currentUser = api.getCurrentUser();
+            if (!targetId && currentUser) {
+                targetId = currentUser.id;
+            } else if (!targetId && !currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            await loadUserProfile();
+            await loadUserPosts();
+            document.getElementById('editProfileForm').addEventListener('submit', submitProfileEdit);
+        });
+
+        async function loadUserProfile() {
+            try {
+                const res = await api.getUserProfile(targetId);
+                if (res.success && res.data.user) {
+                    profileUser = res.data.user;
+                    const u = profileUser;
+                    const currentUser = api.getCurrentUser();
+
+                    document.title = `${u.full_name} (@${u.username}) — BlogSphere AI`;
+                    document.getElementById('profName').textContent = u.full_name;
+                    document.getElementById('profUsername').textContent = u.username;
+                    document.getElementById('profAvatar').src = u.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80';
+                    document.getElementById('profBadge').textContent = u.author_badge || '✍️ Writer';
+                    document.getElementById('profScore').textContent = u.reputation_score || 0;
+                    document.getElementById('profBio').textContent = u.bio || 'No bio provided.';
+                    document.getElementById('profPostCount').textContent = u.post_count || 0;
+                    document.getElementById('profViewsCount').textContent = u.total_views || 0;
+                    document.getElementById('profLikesCount').textContent = u.total_likes || 0;
+                    document.getElementById('profFollowersCount').textContent = u.follower_count || 0;
+                    document.getElementById('articlesTitleAuthor').textContent = u.full_name;
+
+                    const actionsDiv = document.getElementById('profActions');
+                    if (currentUser && currentUser.id === u.id) {
+                        actionsDiv.innerHTML = `<button onclick="openEditProfileModal()" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit Profile</button>`;
+                    } else if (currentUser) {
+                        const isFollowing = u.is_following;
+                        actionsDiv.innerHTML = `
+                            <button id="followBtn" onclick="toggleFollow(${u.id})" class="btn ${isFollowing ? 'btn-secondary' : 'btn-primary'}">
+                                ${isFollowing ? 'Following' : '<i class="fas fa-user-plus"></i> Follow'}
+                            </button>
+                        `;
+                    }
+                }
+            } catch (e) {
+                showToast('User profile not found', 'error');
+            }
+        }
+
+        async function toggleFollow(userId) {
+            const btn = document.getElementById('followBtn');
+            try {
+                if (btn.classList.contains('btn-secondary')) {
+                    await api.unfollowUser(userId);
+                    btn.className = 'btn btn-primary';
+                    btn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+                    showToast('Unfollowed user', 'info');
+                } else {
+                    await api.followUser(userId);
+                    btn.className = 'btn btn-secondary';
+                    btn.textContent = 'Following';
+                    showToast('You are now following this author!', 'success');
+                }
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        async function loadUserPosts() {
+            try {
+                const res = await api.getUserPosts(targetId);
+                const grid = document.getElementById('userPostsGrid');
+                if (res.success && res.data.posts.length) {
+                    grid.innerHTML = res.data.posts.map(p => `
+                        <article class="blog-card">
+                            <div class="blog-card-image-wrap">
+                                <img src="${p.featured_image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80'}" class="blog-card-image" alt="${escapeHTML(p.title)}">
+                                <span class="blog-card-category">${escapeHTML(p.category ? p.category.name : 'General')}</span>
+                            </div>
+                            <div class="blog-card-body">
+                                <h3 class="blog-card-title"><a href="post.html?id=${p.id}">${escapeHTML(p.title)}</a></h3>
+                                <p class="blog-card-excerpt">${escapeHTML(p.excerpt)}</p>
+                                <div class="blog-card-footer">
+                                    <span class="post-date">👁️ ${p.views} views · ❤️ ${p.like_count}</span>
+                                    <a href="post.html?id=${p.id}" class="action-btn">Read →</a>
+                                </div>
+                            </div>
+                        </article>
+                    `).join('');
+                } else {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">No published articles yet.</div>`;
+                }
+            } catch (e) {}
+        }
+
+        function openEditProfileModal() {
+            if (!profileUser) return;
+            document.getElementById('editFullName').value = profileUser.full_name || '';
+            document.getElementById('editAvatarUrl').value = profileUser.avatar_url || '';
+            document.getElementById('editBio').value = profileUser.bio || '';
+            document.getElementById('editProfileModal').classList.add('show');
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('editProfileModal').classList.remove('show');
+        }
+
+        async function submitProfileEdit(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('editFullName').value.trim();
+            const avatarUrl = document.getElementById('editAvatarUrl').value.trim();
+            const bio = document.getElementById('editBio').value.trim();
+
+            try {
+                const res = await api.updateUserProfile(profileUser.id, { full_name: fullName, avatar_url: avatarUrl, bio });
+                if (res.success) {
+                    showToast('Profile updated!', 'success');
+                    closeEditProfileModal();
+                    loadUserProfile();
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogSphere AI — AI-Powered Blogging Platform</title>
+    <meta name="description" content="Discover, write and share intelligent articles powered by REST API and AI tools.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                ✨ BlogSphere <span class="logo-badge">AI</span>
+            </a>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="nav-link active">Home</a></li>
+                <li><a href="explore.html" class="nav-link">Explore</a></li>
+                <li><a href="explore.html?sort=trending" class="nav-link">Trending</a></li>
+                <li><a href="bookmarks.html" class="nav-link">Bookmarks</a></li>
+            </ul>
+
+            <div class="nav-search">
+                <i class="fas fa-search nav-search-icon"></i>
+                <input type="text" id="globalSearchInput" placeholder="Search topics, articles, authors...">
+            </div>
+
+            <div class="nav-actions" id="navActions">
+                <!-- Dynamically populated by js/main.js -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-glow"></div>
+        <div class="container hero-content">
+            <div class="hero-pill">
+                <span>✨ Next-Gen AI Blogging Platform</span>
+            </div>
+            <h1 class="hero-title">
+                Write. Share. Discover. <span class="gradient-text">Smarter.</span>
+            </h1>
+            <p class="hero-subtitle">
+                An intelligent blogging ecosystem powered by REST APIs, smart AI recommendations, and interactive author analytics.
+            </p>
+            <div class="hero-ctas">
+                <a href="create-post.html" class="btn btn-primary">
+                    <i class="fas fa-pen"></i> Start Writing Now
+                </a>
+                <a href="explore.html" class="btn btn-secondary">
+                    <i class="fas fa-compass"></i> Explore Articles
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="container">
+        <!-- Featured Hero Post -->
+        <section id="featuredSection" style="display: none; margin-bottom: 3.5rem;">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">⭐ Featured Article</h2>
+                    <p class="section-subtitle">Hand-picked Editor's Choice of the week</p>
+                </div>
+            </div>
+            <div id="featuredCardContainer"></div>
+        </section>
+
+        <!-- 🔥 Trending Blogs Section -->
+        <section style="margin-bottom: 3.5rem;">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">🔥 Trending Blogs</h2>
+                    <p class="section-subtitle">Most read and interacted stories today</p>
+                </div>
+                <a href="explore.html?sort=trending" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="trending-grid" id="trendingGrid">
+                <!-- Dynamically filled -->
+            </div>
+        </section>
+
+        <!-- ✨ Recommended For You Section -->
+        <section id="recommendationsSection" style="margin-bottom: 3.5rem;">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">✨ Recommended For You</h2>
+                    <p class="section-subtitle">Tailored based on categories, tags, and reading history</p>
+                </div>
+            </div>
+            <div class="blog-grid" id="recommendationsGrid">
+                <!-- Dynamically filled -->
+            </div>
+        </section>
+
+        <!-- Categories Filter Pills -->
+        <section style="margin-bottom: 2rem;">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">📂 Explore Categories</h2>
+                    <p class="section-subtitle">Filter articles by your favorite tech & lifestyle topics</p>
+                </div>
+            </div>
+            <div class="categories-bar" id="categoriesBar">
+                <button class="category-pill active" data-category="">All Categories</button>
+                <!-- Dynamically filled -->
+            </div>
+        </section>
+
+        <!-- Latest Articles Grid -->
+        <section style="margin-bottom: 3.5rem;">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">📰 Latest Articles</h2>
+                    <p class="section-subtitle">Fresh stories published by our growing creator community</p>
+                </div>
+            </div>
+            <div class="blog-grid" id="latestPostsGrid">
+                <!-- Dynamically filled -->
+            </div>
+        </section>
+
+        <!-- 🏆 Top Authors Leaderboard -->
+        <section style="margin-bottom: 3.5rem;">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">🏆 Top Authors</h2>
+                    <p class="section-subtitle">Recognizing our highest-reputation creators</p>
+                </div>
+            </div>
+            <div class="authors-grid" id="topAuthorsGrid">
+                <!-- Dynamically filled -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-col">
+                <a href="index.html" class="logo" style="margin-bottom: 1rem; display: inline-block;">
+                    ✨ BlogSphere <span class="logo-badge">AI</span>
+                </a>
+                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 320px;">
+                    An AI-powered blogging platform built with Python Flask REST API, SQLite/SQLAlchemy, and modern web UI technologies.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="explore.html">Explore</a></li>
+                    <li><a href="explore.html?sort=trending">Trending</a></li>
+                    <li><a href="bookmarks.html">Bookmarks</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Creators</h4>
+                <ul class="footer-links">
+                    <li><a href="create-post.html">Write an Article</a></li>
+                    <li><a href="dashboard.html">Author Dashboard</a></li>
+                    <li><a href="profile.html">My Profile</a></li>
+                    <li><a href="admin.html">Admin Portal</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                    <a href="#" class="theme-btn"><i class="fab fa-github"></i></a>
+                    <a href="#" class="theme-btn"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="theme-btn"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>© 2026 BlogSphere AI. Engineered for Hackathons. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadFeaturedPost();
+            loadTrendingPosts();
+            loadRecommendations();
+            loadCategories();
+            loadLatestPosts();
+        });
+
+        async function loadFeaturedPost() {
+            try {
+                const res = await api.getPosts({ limit: 1, sort: 'views' });
+                if (res.success && res.data.posts.length) {
+                    const post = res.data.posts[0];
+                    document.getElementById('featuredSection').style.display = 'block';
+                    document.getElementById('featuredCardContainer').innerHTML = `
+                        <div class="featured-card">
+                            <div class="featured-img-wrap">
+                                <img src="${post.featured_image || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=900&q=80'}" class="featured-img" alt="${escapeHTML(post.title)}">
+                            </div>
+                            <div class="featured-body">
+                                <span class="featured-badge">Featured Story</span>
+                                <h3 class="featured-title"><a href="post.html?id=${post.id}">${escapeHTML(post.title)}</a></h3>
+                                <p class="featured-excerpt">${escapeHTML(post.excerpt)}</p>
+                                <div class="blog-card-footer" style="border: none; padding-top: 0;">
+                                    <div class="author-info">
+                                        <img src="${post.author ? post.author.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80' : ''}" class="author-avatar">
+                                        <div>
+                                            <div class="author-name">${escapeHTML(post.author ? post.author.full_name : 'Author')}</div>
+                                            <div class="post-date">${post.reading_time || '3 min read'}</div>
+                                        </div>
+                                    </div>
+                                    <a href="post.html?id=${post.id}" class="btn btn-primary">Read Article <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (e) {}
+        }
+
+        async function loadTrendingPosts() {
+            try {
+                const res = await api.getTrending(3);
+                const grid = document.getElementById('trendingGrid');
+                if (res.success && res.data.posts.length) {
+                    grid.innerHTML = res.data.posts.map((post, idx) => `
+                        <div class="trending-card">
+                            <div class="trending-number">#0${idx + 1}</div>
+                            <span class="blog-card-category" style="position: static; display: inline-block; margin-bottom: 0.8rem;">
+                                ${escapeHTML(post.category ? post.category.name : 'General')}
+                            </span>
+                            <h3 class="blog-card-title"><a href="post.html?id=${post.id}">${escapeHTML(post.title)}</a></h3>
+                            <div class="post-date" style="margin-top: 0.8rem;">
+                                👁️ ${post.views} views · ❤️ ${post.like_count} likes
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+
+        async function loadRecommendations() {
+            try {
+                const res = await api.getRecommendations(3);
+                const grid = document.getElementById('recommendationsGrid');
+                if (res.success && res.data.posts.length) {
+                    grid.innerHTML = res.data.posts.map(post => createPostCardHTML(post)).join('');
+                }
+            } catch (e) {}
+        }
+
+        async function loadCategories() {
+            try {
+                const res = await api.getCategories();
+                const bar = document.getElementById('categoriesBar');
+                if (res.success && res.data.categories.length) {
+                    const pills = res.data.categories.map(c => `
+                        <button class="category-pill" data-category="${c.slug}">${c.icon} ${escapeHTML(c.name)}</button>
+                    `).join('');
+                    bar.innerHTML = `<button class="category-pill active" data-category="">All Categories</button>` + pills;
+
+                    bar.querySelectorAll('.category-pill').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            bar.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                            btn.classList.add('active');
+                            const slug = btn.getAttribute('data-category');
+                            loadLatestPosts(slug);
+                        });
+                    });
+                }
+            } catch (e) {}
+        }
+
+        async function loadLatestPosts(categorySlug = '') {
+            try {
+                const params = { limit: 6 };
+                if (categorySlug) params.category = categorySlug;
+                const res = await api.getPosts(params);
+                const grid = document.getElementById('latestPostsGrid');
+                if (res.success && res.data.posts.length) {
+                    grid.innerHTML = res.data.posts.map(post => createPostCardHTML(post)).join('');
+                } else {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">No posts found in this category.</div>`;
+                }
+            } catch (e) {}
+        }
+
+        function createPostCardHTML(post) {
+            return `
+                <article class="blog-card">
+                    <div class="blog-card-image-wrap">
+                        <img src="${post.featured_image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80'}" class="blog-card-image" alt="${escapeHTML(post.title)}">
+                        <span class="blog-card-category">${escapeHTML(post.category ? post.category.name : 'General')}</span>
+                    </div>
+                    <div class="blog-card-body">
+                        <h3 class="blog-card-title"><a href="post.html?id=${post.id}">${escapeHTML(post.title)}</a></h3>
+                        <p class="blog-card-excerpt">${escapeHTML(post.excerpt)}</p>
+                        <div class="blog-card-tags">
+                            ${(post.tags || []).slice(0, 3).map(t => `<span class="tag-pill">#${escapeHTML(t.name)}</span>`).join('')}
+                        </div>
+                        <div class="blog-card-footer">
+                            <div class="author-info">
+                                <img src="${post.author ? post.author.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80' : ''}" class="author-avatar">
+                                <div>
+                                    <div class="author-name">${escapeHTML(post.author ? post.author.full_name : 'Author')}</div>
+                                    <div class="post-date">${post.reading_time || '2 min read'}</div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn ${post.liked ? 'active' : ''}" onclick="toggleLike(event, ${post.id})">
+                                    ❤️ ${post.like_count || 0}
+                                </button>
+                                <button class="action-btn ${post.bookmarked ? 'active' : ''}" onclick="toggleBookmark(event, ${post.id})">
+                                    🔖
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        async function toggleLike(e, id) {
+            e.preventDefault();
+            if (!api.isLoggedIn()) {
+                showToast('Please login to like articles', 'info');
+                return;
+            }
+            try {
+                const btn = e.currentTarget;
+                if (btn.classList.contains('active')) {
+                    await api.unlikePost(id);
+                    btn.classList.remove('active');
+                    showToast('Unliked article', 'info');
+                } else {
+                    await api.likePost(id);
+                    btn.classList.add('active');
+                    showToast('❤️ You liked this article!');
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function toggleBookmark(e, id) {
+            e.preventDefault();
+            if (!api.isLoggedIn()) {
+                showToast('Please login to save bookmarks', 'info');
+                return;
+            }
+            try {
+                const btn = e.currentTarget;
+                if (btn.classList.contains('active')) {
+                    await api.unbookmarkPost(id);
+                    btn.classList.remove('active');
+                    showToast('Bookmark removed', 'info');
+                } else {
+                    await api.bookmarkPost(id);
+                    btn.classList.add('active');
+                    showToast('🔖 Saved to your bookmarks!');
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

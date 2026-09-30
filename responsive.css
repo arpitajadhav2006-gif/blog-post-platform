@@ -1,0 +1,283 @@
+/* ==========================================================================
+   BlogSphere - Responsive Stylesheet
+   Breakpoints: 1200px, 1024px, 768px, 480px, 375px
+   ========================================================================== */
+
+/* --- Mobile Drawer Navigation (Shared) --- */
+.mobile-nav-drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 290px;
+  height: 100vh;
+  background-color: var(--bg-card);
+  border-left: 1px solid var(--border-color);
+  z-index: 2500;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+
+.mobile-nav-drawer.active {
+  right: 0;
+}
+
+.mobile-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mobile-nav-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.mobile-nav-link {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.mobile-nav-link i {
+  color: var(--primary);
+  width: 24px;
+}
+
+.mobile-nav-link.active {
+  color: var(--secondary);
+}
+
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 2400;
+  display: none;
+}
+
+.mobile-overlay.active {
+  display: block;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+/* --- Breakpoint: Below 1024px (Laptops / Large Tablets) --- */
+@media (max-width: 1024px) {
+  .hero-content h1 {
+    font-size: 2.85rem;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .writers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* --- Breakpoint: Below 868px (Tablets) --- */
+@media (max-width: 868px) {
+  .navbar-inner {
+    height: 64px;
+  }
+
+  .nav-links, .nav-search-wrap {
+    display: none;
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .hero-visual {
+    order: -1;
+  }
+
+  .hero-main-img {
+    height: 340px;
+  }
+
+  .floating-card-1 {
+    left: 10px;
+    top: 5%;
+  }
+
+  .floating-card-2 {
+    right: 10px;
+    bottom: 5%;
+  }
+
+  .feed-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .feed-header-welcome {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .profile-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .profile-meta-row, .profile-stats-row {
+    justify-content: center;
+  }
+
+  .profile-name-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .article-title {
+    font-size: 2.15rem;
+  }
+
+  .post-sticky-actions {
+    padding: 1rem 1.25rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+/* --- Breakpoint: Below 640px (Mobile Landscape / Large Phones) --- */
+@media (max-width: 640px) {
+  .hero-content h1 {
+    font-size: 2.35rem;
+  }
+
+  .section {
+    padding: 3.5rem 0;
+  }
+
+  .section-title {
+    font-size: 1.85rem;
+  }
+
+  .features-grid, .posts-grid, .writers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-stats-row {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .cta-banner {
+    padding: 3rem 1.5rem;
+  }
+
+  .cta-banner h2 {
+    font-size: 2rem;
+  }
+
+  .editor-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .editor-form-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .draft-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .draft-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* --- Breakpoint: Below 400px (Compact Mobile / 375px) --- */
+@media (max-width: 400px) {
+  html {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1.15rem;
+  }
+
+  .author-bio-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-stats-row {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .floating-card {
+    display: none; /* Hide decorative floating elements on extra small screens */
+  }
+}

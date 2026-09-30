@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Article — BlogSphere AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                ✨ BlogSphere <span class="logo-badge">AI</span>
+            </a>
+            <div class="nav-actions" id="navActions"></div>
+        </div>
+    </nav>
+
+    <!-- Editor Form -->
+    <div class="container">
+        <div class="editor-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                <div>
+                    <h1 style="font-size: 1.85rem;">Edit Article</h1>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Update your article details and content</p>
+                </div>
+                <div style="display: flex; gap: 0.8rem;">
+                    <button type="button" id="saveBtn" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+            </div>
+
+            <form id="editForm">
+                <div class="form-group">
+                    <label class="form-label">Article Title</label>
+                    <input type="text" id="title" class="form-control" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="categoryId" class="form-control" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tags (Comma Separated)</label>
+                        <input type="text" id="tagsInput" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Featured Image URL</label>
+                    <input type="url" id="featuredImage" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Summary / Excerpt</label>
+                    <textarea id="excerpt" class="form-control" style="min-height: 80px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Article Content</label>
+                    <textarea id="content" class="form-control" style="min-height: 340px; font-family: monospace;" required></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!postId) {
+                window.location.href = 'index.html';
+                return;
+            }
+            if (!api.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            await loadCategories();
+            await loadPostData();
+
+            document.getElementById('saveBtn').addEventListener('click', saveChanges);
+        });
+
+        async function loadCategories() {
+            try {
+                const res = await api.getCategories();
+                const sel = document.getElementById('categoryId');
+                if (res.success && res.data.categories.length) {
+                    sel.innerHTML = `<option value="">Select Category</option>` + res.data.categories.map(c => `
+                        <option value="${c.id}">${c.icon} ${escapeHTML(c.name)}</option>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+
+        async function loadPostData() {
+            try {
+                const res = await api.getPost(postId);
+                if (res.success && res.data.post) {
+                    const p = res.data.post;
+                    document.getElementById('title').value = p.title;
+                    document.getElementById('content').value = p.content;
+                    document.getElementById('excerpt').value = p.excerpt || '';
+                    document.getElementById('featuredImage').value = p.featured_image || '';
+                    if (p.category) document.getElementById('categoryId').value = p.category.id;
+                    if (p.tags) document.getElementById('tagsInput').value = p.tags.map(t => t.name).join(', ');
+                }
+            } catch (e) {
+                showToast('Failed to load post data', 'error');
+            }
+        }
+
+        async function saveChanges() {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const categoryId = document.getElementById('categoryId').value;
+            const featuredImage = document.getElementById('featuredImage').value.trim();
+            const excerpt = document.getElementById('excerpt').value.trim();
+            const tags = document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(Boolean);
+
+            try {
+                const res = await api.updatePost(postId, {
+                    title,
+                    content,
+                    category_id: categoryId ? parseInt(categoryId) : null,
+                    featured_image: featuredImage,
+                    excerpt,
+                    tags
+                });
+
+                if (res.success) {
+                    showToast('Article updated successfully!', 'success');
+                    setTimeout(() => window.location.href = `post.html?id=${postId}`, 800);
+                } else {
+                    showToast(res.message || 'Update failed', 'error');
+                }
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

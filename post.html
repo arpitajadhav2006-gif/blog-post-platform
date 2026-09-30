@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Reader — BlogSphere AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="readingProgress"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                ✨ BlogSphere <span class="logo-badge">AI</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="explore.html" class="nav-link">Explore</a></li>
+                <li><a href="bookmarks.html" class="nav-link">Bookmarks</a></li>
+            </ul>
+            <div class="nav-actions" id="navActions"></div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Post Header -->
+        <article class="post-detail-header">
+            <span class="blog-card-category" id="postCategory" style="position: static; display: inline-block; margin-bottom: 1rem;">
+                Category
+            </span>
+            <h1 class="post-detail-title" id="postTitle">Loading Title...</h1>
+
+            <div class="post-detail-meta" style="flex-wrap: wrap;">
+                <div class="author-info">
+                    <img id="authorAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" class="author-avatar">
+                    <div style="text-align: left;">
+                        <a href="#" id="authorLink" class="author-name">Author Name</a>
+                        <div id="authorBadge" class="author-badge" style="margin: 0; margin-top: 2px;">✍️ Writer</div>
+                    </div>
+                </div>
+                <span>·</span>
+                <span id="postDate">Aug 9, 2026</span>
+                <span>·</span>
+                <span id="readingTime">3 min read</span>
+                <span>·</span>
+                <span>👁️ <span id="viewCount">0</span> views</span>
+            </div>
+        </article>
+
+        <!-- Featured Hero Image -->
+        <div style="max-width: 900px; margin: 0 auto;">
+            <img id="featuredImg" src="" class="post-detail-image" style="display: none;">
+        </div>
+
+        <!-- Post Content Body -->
+        <div class="post-content-wrap" id="postBody">
+            <p style="text-align: center; color: var(--text-muted);">Loading article content...</p>
+        </div>
+
+        <!-- Tags List & Engagement Actions -->
+        <div style="max-width: 800px; margin: 3rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div class="blog-card-tags" id="postTagsList"></div>
+
+                <div class="card-actions" style="gap: 0.8rem;">
+                    <button id="likeBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+                        ❤️ <span id="likeCount">0</span> Likes
+                    </button>
+                    <button id="bookmarkBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+                        🔖 Save
+                    </button>
+                    <button id="shareBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+                        🔗 Share
+                    </button>
+                    <button id="reportBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem; color: var(--danger);" title="Report Inappropriate Content">
+                        🚩 Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <section style="max-width: 800px; margin: 4rem auto 0;">
+            <h2 style="font-size: 1.6rem; margin-bottom: 1.5rem;">
+                💬 Discussion (<span id="commentCount">0</span>)
+            </h2>
+
+            <!-- Add Comment Form -->
+            <div class="chart-card" style="margin-bottom: 2rem;">
+                <h4 style="font-size: 1.05rem; margin-bottom: 0.8rem;" id="commentFormTitle">Leave a comment</h4>
+                <form id="commentForm">
+                    <input type="hidden" id="parentIdInput" value="">
+                    <div class="form-group">
+                        <textarea id="commentContent" class="form-control" style="min-height: 100px;" placeholder="Share your thoughts on this article..." required></textarea>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <button type="button" id="cancelReplyBtn" class="btn btn-secondary" style="display: none; padding: 0.4rem 0.8rem; font-size: 0.85rem;">Cancel Reply</button>
+                        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">Post Comment</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Comments List -->
+            <div id="commentsList" style="display: flex; flex-direction: column; gap: 1.2rem;"></div>
+        </section>
+
+        <!-- Related Recommended Stories -->
+        <section style="margin: 5rem 0 3rem;">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">✨ Related Articles</h2>
+                    <p class="section-subtitle">More stories you might enjoy reading next</p>
+                </div>
+            </div>
+            <div class="blog-grid" id="relatedPostsGrid"></div>
+        </section>
+    </main>
+
+    <!-- Content Reporting Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+                <h3 style="font-size: 1.3rem;">Report Article</h3>
+                <button type="button" class="theme-btn" onclick="closeReportModal()">✕</button>
+            </div>
+            <form id="reportForm">
+                <div class="form-group">
+                    <label class="form-label">Reason for reporting</label>
+                    <select id="reportReason" class="form-control" required>
+                        <option value="Inappropriate Content">Inappropriate Content</option>
+                        <option value="Spam or Misleading">Spam or Misleading</option>
+                        <option value="Copyright Violation">Copyright Violation</option>
+                        <option value="Hate Speech or Harassment">Hate Speech or Harassment</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Additional Details</label>
+                    <textarea id="reportDescription" class="form-control" style="min-height: 90px;" placeholder="Please describe why this content breaks platform guidelines..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Report</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+        let currentPost = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!postId) {
+                window.location.href = 'index.html';
+                return;
+            }
+            initReadingProgressBar();
+            loadPostDetails();
+            loadComments();
+            loadRelatedPosts();
+
+            document.getElementById('likeBtn').addEventListener('click', handleLike);
+            document.getElementById('bookmarkBtn').addEventListener('click', handleBookmark);
+            document.getElementById('shareBtn').addEventListener('click', handleShare);
+            document.getElementById('reportBtn').addEventListener('click', openReportModal);
+            document.getElementById('reportForm').addEventListener('submit', submitReport);
+            document.getElementById('commentForm').addEventListener('submit', submitComment);
+            document.getElementById('cancelReplyBtn').addEventListener('click', cancelReply);
+        });
+
+        function initReadingProgressBar() {
+            window.addEventListener('scroll', () => {
+                const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = (window.scrollY / Math.max(totalHeight, 1)) * 100;
+                document.getElementById('readingProgress').style.width = `${progress}%`;
+            });
+        }
+
+        async function loadPostDetails() {
+            try {
+                const res = await api.getPost(postId);
+                if (res.success && res.data.post) {
+                    currentPost = res.data.post;
+                    const p = currentPost;
+
+                    document.title = `${p.title} — BlogSphere AI`;
+                    document.getElementById('postTitle').textContent = p.title;
+                    document.getElementById('postCategory').textContent = p.category ? p.category.name : 'General';
+                    document.getElementById('postBody').innerHTML = p.content;
+                    document.getElementById('viewCount').textContent = p.views;
+                    document.getElementById('likeCount').textContent = p.like_count;
+                    document.getElementById('readingTime').textContent = p.reading_time || '3 min read';
+                    document.getElementById('postDate').textContent = p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+                    if (p.featured_image) {
+                        const img = document.getElementById('featuredImg');
+                        img.src = p.featured_image;
+                        img.style.display = 'block';
+                    }
+
+                    if (p.author) {
+                        document.getElementById('authorAvatar').src = p.author.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80';
+                        document.getElementById('authorLink').textContent = p.author.full_name || p.author.username;
+                        document.getElementById('authorLink').href = `profile.html?id=${p.author.id}`;
+                        document.getElementById('authorBadge').textContent = p.author.author_badge || '✍️ Writer';
+                    }
+
+                    if (p.tags && p.tags.length) {
+                        document.getElementById('postTagsList').innerHTML = p.tags.map(t => `<span class="tag-pill">#${escapeHTML(t.name)}</span>`).join('');
+                    }
+
+                    if (p.liked) document.getElementById('likeBtn').classList.add('active');
+                    if (p.bookmarked) document.getElementById('bookmarkBtn').classList.add('active');
+                }
+            } catch (e) {
+                showToast('Article not found or removed', 'error');
+            }
+        }
+
+        async function handleLike() {
+            if (!api.isLoggedIn()) {
+                showToast('Please log in to like articles', 'info');
+                return;
+            }
+            const btn = document.getElementById('likeBtn');
+            try {
+                if (btn.classList.contains('active')) {
+                    const res = await api.unlikePost(postId);
+                    btn.classList.remove('active');
+                    document.getElementById('likeCount').textContent = res.data.like_count;
+                } else {
+                    const res = await api.likePost(postId);
+                    btn.classList.add('active');
+                    document.getElementById('likeCount').textContent = res.data.like_count;
+                    showToast('❤️ You liked this story!', 'success');
+                }
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        async function handleBookmark() {
+            if (!api.isLoggedIn()) {
+                showToast('Please log in to save bookmarks', 'info');
+                return;
+            }
+            const btn = document.getElementById('bookmarkBtn');
+            try {
+                if (btn.classList.contains('active')) {
+                    await api.unbookmarkPost(postId);
+                    btn.classList.remove('active');
+                    showToast('Bookmark removed', 'info');
+                } else {
+                    await api.bookmarkPost(postId);
+                    btn.classList.add('active');
+                    showToast('🔖 Saved to your reading list!', 'success');
+                }
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        function handleShare() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(window.location.href);
+                showToast('🔗 Article link copied to clipboard!', 'success');
+            }
+        }
+
+        function openReportModal() {
+            if (!api.isLoggedIn()) {
+                showToast('Please log in to report content', 'info');
+                return;
+            }
+            document.getElementById('reportModal').classList.add('show');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.remove('show');
+        }
+
+        async function submitReport(e) {
+            e.preventDefault();
+            const reason = document.getElementById('reportReason').value;
+            const description = document.getElementById('reportDescription').value.trim();
+            try {
+                const res = await api.reportPost(postId, reason, description);
+                if (res.success) {
+                    showToast('🚩 Report submitted to admin queue', 'info');
+                    closeReportModal();
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // Comments Engine
+        async function loadComments() {
+            try {
+                const res = await api.getComments(postId);
+                if (res.success && res.data.comments) {
+                    const comments = res.data.comments;
+                    document.getElementById('commentCount').textContent = comments.length;
+                    const list = document.getElementById('commentsList');
+
+                    if (!comments.length) {
+                        list.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No comments yet. Be the first to start the discussion!</div>`;
+                        return;
+                    }
+
+                    list.innerHTML = comments.map(c => renderCommentHTML(c)).join('');
+                }
+            } catch (e) {}
+        }
+
+        function renderCommentHTML(c) {
+            return `
+                <div class="chart-card" style="padding: 1.25rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
+                        <div class="author-info">
+                            <img src="${c.author ? c.author.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80' : ''}" class="author-avatar" style="width: 32px; height: 32px;">
+                            <div>
+                                <span class="author-name">${escapeHTML(c.author ? c.author.full_name : 'User')}</span>
+                                <span class="post-date" style="margin-left: 0.5rem;">${c.created_at ? new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span>
+                            </div>
+                        </div>
+                        <button class="action-btn" onclick="prepareReply(${c.id}, '${escapeHTML(c.author ? c.author.full_name : 'User')}')" style="font-size: 0.78rem;">Reply</button>
+                    </div>
+                    <p style="font-size: 0.95rem; color: var(--text-primary); padding-left: 2.6rem;">${escapeHTML(c.content)}</p>
+
+                    ${c.replies && c.replies.length ? `
+                        <div style="margin-top: 1rem; padding-left: 2.6rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                            ${c.replies.map(r => `
+                                <div style="background: var(--bg-tertiary); padding: 0.8rem 1rem; border-radius: var(--radius-md);">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
+                                        <strong style="font-size: 0.85rem;">${escapeHTML(r.author ? r.author.full_name : 'User')}</strong>
+                                        <span class="post-date">${r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span>
+                                    </div>
+                                    <p style="font-size: 0.9rem;">${escapeHTML(r.content)}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function prepareReply(commentId, authorName) {
+            document.getElementById('parentIdInput').value = commentId;
+            document.getElementById('commentFormTitle').textContent = `Replying to ${authorName}`;
+            document.getElementById('cancelReplyBtn').style.display = 'inline-block';
+            document.getElementById('commentContent').focus();
+        }
+
+        function cancelReply() {
+            document.getElementById('parentIdInput').value = '';
+            document.getElementById('commentFormTitle').textContent = 'Leave a comment';
+            document.getElementById('cancelReplyBtn').style.display = 'none';
+        }
+
+        async function submitComment(e) {
+            e.preventDefault();
+            if (!api.isLoggedIn()) {
+                showToast('Please log in to post a comment', 'info');
+                return;
+            }
+            const content = document.getElementById('commentContent').value.trim();
+            const parentId = document.getElementById('parentIdInput').value;
+            if (!content) return;
+
+            try {
+                const res = await api.addComment(postId, content, parentId ? parseInt(parentId) : null);
+                if (res.success) {
+                    showToast('Comment posted!', 'success');
+                    document.getElementById('commentContent').value = '';
+                    cancelReply();
+                    loadComments();
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function loadRelatedPosts() {
+            try {
+                const res = await api.getRecommendations(3);
+                const grid = document.getElementById('relatedPostsGrid');
+                if (res.success && res.data.posts.length) {
+                    grid.innerHTML = res.data.posts.map(p => `
+                        <article class="blog-card">
+                            <div class="blog-card-image-wrap">
+                                <img src="${p.featured_image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80'}" class="blog-card-image" alt="${escapeHTML(p.title)}">
+                                <span class="blog-card-category">${escapeHTML(p.category ? p.category.name : 'General')}</span>
+                            </div>
+                            <div class="blog-card-body">
+                                <h3 class="blog-card-title"><a href="post.html?id=${p.id}">${escapeHTML(p.title)}</a></h3>
+                                <p class="blog-card-excerpt">${escapeHTML(p.excerpt)}</p>
+                                <div class="blog-card-footer">
+                                    <span class="post-date">${p.reading_time || '2 min read'}</span>
+                                    <a href="post.html?id=${p.id}" class="action-btn">Read →</a>
+                                </div>
+                            </div>
+                        </article>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Blog Article — BlogSphere AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                ✨ BlogSphere <span class="logo-badge">AI</span>
+            </a>
+            <div class="nav-actions" id="navActions"></div>
+        </div>
+    </nav>
+
+    <!-- Editor Form -->
+    <div class="container">
+        <div class="editor-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                <div>
+                    <h1 style="font-size: 1.85rem;">Write Article</h1>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Craft engaging content using AI assistance</p>
+                </div>
+                <div style="display: flex; gap: 0.8rem;">
+                    <button type="button" id="previewBtn" class="btn btn-secondary"><i class="fas fa-eye"></i> Preview</button>
+                    <button type="button" id="saveDraftBtn" class="btn btn-secondary">Save Draft</button>
+                    <button type="button" id="publishBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Publish Now</button>
+                </div>
+            </div>
+
+            <!-- AI Action Bar -->
+            <div class="ai-toolbar">
+                <span style="font-weight: 700; font-size: 0.85rem; color: var(--primary); display: flex; align-items: center; gap: 0.3rem;">
+                    ✨ AI Assistant Tools:
+                </span>
+                <button type="button" id="aiTitleBtn" class="btn btn-ai" style="padding: 0.35rem 0.8rem; font-size: 0.82rem;">
+                    💡 Generate Title
+                </button>
+                <button type="button" id="aiImproveBtn" class="btn btn-ai" style="padding: 0.35rem 0.8rem; font-size: 0.82rem;">
+                    ✍️ Improve Writing
+                </button>
+                <button type="button" id="aiSummaryBtn" class="btn btn-ai" style="padding: 0.35rem 0.8rem; font-size: 0.82rem;">
+                    📝 Generate Summary
+                </button>
+                <button type="button" id="aiTagsBtn" class="btn btn-ai" style="padding: 0.35rem 0.8rem; font-size: 0.82rem;">
+                    🏷️ Suggest Tags
+                </button>
+            </div>
+
+            <form id="postForm">
+                <div class="form-group">
+                    <label class="form-label">Article Title</label>
+                    <input type="text" id="title" class="form-control" placeholder="e.g. Building Scalable Web APIs with Python & Flask" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="categoryId" class="form-control" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tags (Comma Separated)</label>
+                        <input type="text" id="tagsInput" class="form-control" placeholder="Python, REST API, Tutorial">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Featured Image URL</label>
+                    <input type="url" id="featuredImage" class="form-control" placeholder="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=900&q=80">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Summary / Excerpt (Optional - Auto-generated if left blank)</label>
+                    <textarea id="excerpt" class="form-control" style="min-height: 80px;" placeholder="Brief summary of your article..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <label class="form-label" style="margin-bottom: 0;">Article Content (HTML / Markdown supported)</label>
+                        <span id="wordCountBadge" style="font-size: 0.82rem; color: var(--text-muted);">0 words · ~1 min read</span>
+                    </div>
+                    <textarea id="content" class="form-control" style="min-height: 340px; font-family: monospace; font-size: 0.95rem;" placeholder="Start writing your story here..." required></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal-card" style="max-width: 750px; max-height: 85vh; overflow-y: auto;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem;">
+                <h3 style="font-size: 1.4rem;">Article Preview</h3>
+                <button type="button" class="theme-btn" onclick="closePreviewModal()">✕</button>
+            </div>
+            <div id="previewContent"></div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!api.isLoggedIn()) {
+                showToast('Please log in to write articles', 'info');
+                setTimeout(() => window.location.href = 'login.html', 800);
+                return;
+            }
+            loadCategories();
+            initWordCounter();
+            initAITools();
+        });
+
+        async function loadCategories() {
+            try {
+                const res = await api.getCategories();
+                const sel = document.getElementById('categoryId');
+                if (res.success && res.data.categories.length) {
+                    sel.innerHTML = `<option value="">Select Category</option>` + res.data.categories.map(c => `
+                        <option value="${c.id}">${c.icon} ${escapeHTML(c.name)}</option>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+
+        function initWordCounter() {
+            const textarea = document.getElementById('content');
+            textarea.addEventListener('input', () => {
+                const text = textarea.value.trim();
+                const words = text ? text.split(/\s+/).length : 0;
+                const mins = Math.max(1, Math.ceil(words / 200));
+                document.getElementById('wordCountBadge').textContent = `${words} words · ~${mins} min read`;
+            });
+        }
+
+        function initAITools() {
+            // Generate Title
+            document.getElementById('aiTitleBtn').addEventListener('click', async () => {
+                const content = document.getElementById('content').value.trim() || document.getElementById('title').value.trim();
+                if (!content) {
+                    showToast('Please write some content first to generate title suggestions', 'info');
+                    return;
+                }
+                try {
+                    const res = await api.aiGenerateTitle(content);
+                    if (res.success && res.data.titles.length) {
+                        const choice = prompt("✨ AI Suggested Titles:\n\n" + res.data.titles.map((t, i) => `${i+1}. ${t}`).join('\n\n') + "\n\nEnter number 1-3 to select, or click Cancel:");
+                        if (choice && res.data.titles[parseInt(choice) - 1]) {
+                            document.getElementById('title').value = res.data.titles[parseInt(choice) - 1];
+                            showToast('Title updated!', 'success');
+                        }
+                    }
+                } catch (e) {
+                    showToast('AI title generation failed', 'error');
+                }
+            });
+
+            // Improve Writing
+            document.getElementById('aiImproveBtn').addEventListener('click', async () => {
+                const content = document.getElementById('content').value.trim();
+                if (!content) {
+                    showToast('Please write some content first to analyze', 'info');
+                    return;
+                }
+                try {
+                    const res = await api.aiImproveContent(content);
+                    if (res.success && res.data) {
+                        alert(`✨ AI Writing Analysis:\nScore: ${res.data.score}/100\n\nSuggestions:\n• ` + res.data.suggestions.join('\n• '));
+                    }
+                } catch (e) {
+                    showToast('AI analysis failed', 'error');
+                }
+            });
+
+            // Generate Summary
+            document.getElementById('aiSummaryBtn').addEventListener('click', async () => {
+                const content = document.getElementById('content').value.trim();
+                if (!content) {
+                    showToast('Please write article content first', 'info');
+                    return;
+                }
+                try {
+                    const res = await api.aiGenerateSummary(content);
+                    if (res.success && res.data.summary) {
+                        document.getElementById('excerpt').value = res.data.summary;
+                        showToast('✨ Summary generated and applied!', 'success');
+                    }
+                } catch (e) {
+                    showToast('AI summary failed', 'error');
+                }
+            });
+
+            // Suggest Tags
+            document.getElementById('aiTagsBtn').addEventListener('click', async () => {
+                const title = document.getElementById('title').value.trim();
+                const content = document.getElementById('content').value.trim();
+                if (!title && !content) {
+                    showToast('Please enter title or content first', 'info');
+                    return;
+                }
+                try {
+                    const res = await api.aiGenerateTags(title, content);
+                    if (res.success && res.data.tags.length) {
+                        document.getElementById('tagsInput').value = res.data.tags.join(', ');
+                        showToast('✨ Suggested tags added!', 'success');
+                    }
+                } catch (e) {
+                    showToast('AI tag suggestion failed', 'error');
+                }
+            });
+
+            // Save & Publish
+            document.getElementById('publishBtn').addEventListener('click', () => submitPost('published'));
+            document.getElementById('saveDraftBtn').addEventListener('click', () => submitPost('draft'));
+            document.getElementById('previewBtn').addEventListener('click', openPreviewModal);
+        }
+
+        async function submitPost(status) {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const categoryId = document.getElementById('categoryId').value;
+            const featuredImage = document.getElementById('featuredImage').value.trim();
+            const excerpt = document.getElementById('excerpt').value.trim();
+            const tags = document.getElementById('tagsInput').value.split(',').map(t => t.trim()).filter(Boolean);
+
+            if (!title || !content) {
+                showToast('Title and content are required', 'error');
+                return;
+            }
+
+            try {
+                const res = await api.createPost({
+                    title,
+                    content,
+                    category_id: categoryId ? parseInt(categoryId) : null,
+                    featured_image: featuredImage,
+                    excerpt,
+                    tags,
+                    status
+                });
+
+                if (res.success) {
+                    showToast(`Article ${status === 'published' ? 'published' : 'saved as draft'} successfully!`, 'success');
+                    setTimeout(() => window.location.href = `post.html?id=${res.data.post.id}`, 800);
+                } else {
+                    showToast(res.message || 'Failed to save article', 'error');
+                }
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        function openPreviewModal() {
+            const title = document.getElementById('title').value.trim() || 'Untitled Article';
+            const content = document.getElementById('content').value.trim() || 'No content written yet.';
+            const img = document.getElementById('featuredImage').value.trim();
+
+            document.getElementById('previewContent').innerHTML = `
+                ${img ? `<img src="${img}" style="width:100%; max-height: 280px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1.5rem;">` : ''}
+                <h1 style="font-size: 2rem; margin-bottom: 1rem;">${escapeHTML(title)}</h1>
+                <div class="post-content-wrap" style="font-size: 1.05rem;">${content}</div>
+            `;
+            document.getElementById('previewModal').classList.add('show');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
